@@ -86,8 +86,8 @@ function buildCharts(sample) {
       var filterInfo = dataInfo.filter(x => x.id.toString() === buildCharts)[0];
       console.log(filterInfo)
       var otu_ids = result1.otu_ids;
-      var otu_labels = data.otu_labels;
-      var sample_values = data.sample_values;
+      var otu_labels = result1.otu_labels;
+      var sample_values = result1.sample_values;
       // Deliverable 3: 3. Create a variable that holds the washing frequency.
       var washFreq = data.wfreq;
 
@@ -99,9 +99,9 @@ function buildCharts(sample) {
 
       // Deliverable 1: 8. Create the trace for the bar chart. 
       var barData = [{
-        x: sample_values,
+        x: sample_values.slice(0, 10).reverse(),
         y: yticks,
-        text: otu_labels,
+        text: otu_labels.slice(0, 10).reverse(),
         type: "bar",
         orientation: "h"
       }
@@ -125,38 +125,50 @@ function buildCharts(sample) {
         y: data.sample_values,
         text: data.otu_labels,
         marker: {
-          color: otu_ids
-          // size: , 
+          color: otu_ids,
+          size: sample_values, 
           // colorscale: 
         }
       };
-
-      var bubbleChart = [bubbleData]; 
 
       // Deliverable 2: 2. Create the layout for the bubble chart.
       var bubbleLayout = {
         title : "Bacteria Cultures Per Sample",
         xaxis : otu_ids,
         yaxis : sample_values,
-        showlegend: true,
+        hovermode: 'closest',
+        // showlegend: true,
         height: 600,
         width: 600
       }
+
       // Deliverable 2: 3. Use Plotly to plot the data with the layout.
-      Plotly.newPlot("bubble", bubbleChart, bubbleLayout);
+      Plotly.newPlot("bubble", bubbleData, bubbleLayout);
 
       // Deliverable 3: 4. Create the trace for the gauge chart.
-      var gaugeTrace = (
-        mode = "gauge+number",
-        value = [0, 10],
-        domain = { 'x': [], 'y': [0, 10] },
-        title = { 'text': "Belly Button Washing Frequency" }
-      )
-
+      var gaugeTrace = [
+        {
+          domain: { x: [0, 1], y: [0, 1] },
+          marker: {size: 28, color: 'black'},
+          value: result1.wfreq,
+          title: 'Belly Button Washing Frequency<br> Scrubs per Week',
+          type: "indicator",
+          gauge: { axis: {visible: true, range: [0, 10]}},
+          mode: "number+gauge"
+        }
+    ];
       // Deliverable 3: 5. Create the layout for the gauge chart.
+      var layout = {
+        width: 600,
+         height: 450,
+         margin: { t: 100, r: 100, l: 100, b: 100 },
+         line: {
+         color: 'black'
+         },
+       };
 
       // Deliverable 3: 6. Use Plotly to plot the gauge data and layout.
-
+      Plotly.newPlot("gauge", gaugeTrace, layout);
     });
   });
 }  
